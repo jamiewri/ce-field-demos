@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import {
   FileText,
   Inbox,
@@ -44,6 +44,35 @@ export function AppChrome({
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const main = useRef<HTMLElement>(null);
+  const lastPathname = useRef(pathname);
+
+  useEffect(() => {
+    if (lastPathname.current === pathname) return;
+    lastPathname.current = pathname;
+    // Links inside page content unmount on navigation and drop focus to body.
+    // Shell links persist, so their focus is left alone.
+    const active = document.activeElement;
+    const region = main.current;
+    if (!region || (active && active !== document.body)) return;
+
+    function focusHeading() {
+      const heading = region?.querySelector<HTMLElement>("h1");
+      if (!heading) return false;
+      heading.tabIndex = -1;
+      heading.focus();
+      return true;
+    }
+
+    if (focusHeading()) return;
+    // A loading.tsx skeleton can render before the page heading streams in.
+    region.focus();
+    const observer = new MutationObserver(() => {
+      if (document.activeElement !== region || focusHeading()) observer.disconnect();
+    });
+    observer.observe(region, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [pathname]);
 
   function searchBook(next: string) {
     const trimmed = next.trim();
@@ -68,6 +97,12 @@ export function AppChrome({
 
   return (
     <div className="min-h-full lg:grid lg:grid-cols-[240px_minmax(0,1fr)]">
+      <a
+        href="#main-content"
+        className="sr-only rounded-lg border border-border bg-card text-sm font-medium text-foreground shadow-[var(--shadow-card)] outline-none focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-3 focus:py-2 focus:ring-[3px] focus:ring-ring/50"
+      >
+        Skip to content
+      </a>
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 w-[240px] border-r border-border bg-sidebar transition-transform lg:static lg:translate-x-0",
@@ -198,7 +233,14 @@ export function AppChrome({
             </div>
           </div>
         </header>
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main
+          ref={main}
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 px-4 py-6 outline-none sm:px-6 lg:px-8"
+        >
+          {children}
+        </main>
       </div>
     </div>
   );
