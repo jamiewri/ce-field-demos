@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import {
   FileText,
   Inbox,
@@ -44,6 +44,37 @@ export function AppChrome({
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const mainRef = useRef<HTMLElement>(null);
+  const previousPath = useRef<string | null>(null);
+
+  useEffect(() => {
+    const previous = previousPath.current;
+    previousPath.current = pathname;
+    if (previous === null || previous === pathname) return;
+
+    let attempts = 0;
+    const timer = window.setInterval(() => {
+      attempts += 1;
+      const active = document.activeElement;
+      const inShell = active instanceof HTMLElement && Boolean(active.closest("header, aside"));
+      if (inShell) {
+        window.clearInterval(timer);
+        return;
+      }
+      const parked = !active || active === document.body || active === document.documentElement;
+      const heading = mainRef.current?.querySelector("h1");
+      if (parked && heading instanceof HTMLElement) {
+        heading.tabIndex = -1;
+        const focusHeading = heading.focus.bind(heading) as (
+          options?: FocusOptions & { focusVisible?: boolean },
+        ) => void;
+        focusHeading({ preventScroll: true, focusVisible: true });
+      }
+      if (document.activeElement === heading || attempts > 10) window.clearInterval(timer);
+    }, 50);
+
+    return () => window.clearInterval(timer);
+  }, [pathname]);
 
   function searchBook(next: string) {
     const trimmed = next.trim();
@@ -67,6 +98,13 @@ export function AppChrome({
   }
 
   return (
+    <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:ring-[3px] focus:ring-ring/50"
+      >
+        Skip to content
+      </a>
     <div className="min-h-full lg:grid lg:grid-cols-[240px_minmax(0,1fr)]">
       <aside
         className={cn(
@@ -76,7 +114,12 @@ export function AppChrome({
       >
         <div className="flex h-full flex-col px-4 py-5">
           <div className="flex items-center justify-between">
-            <Link href="/" onClick={() => setOpen(false)} aria-label="Ledgerly home">
+            <Link
+              href="/"
+              onClick={() => setOpen(false)}
+              aria-label="Ledgerly home"
+              className="rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
               <Wordmark />
             </Link>
             <button
@@ -190,16 +233,31 @@ export function AppChrome({
           <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
             <NoticeBell openDisputeCount={openDisputeCount} openDisputes={openDisputes} />
-            <div
-              className="flex size-9 items-center justify-center rounded-full bg-indigo-soft text-xs font-semibold text-indigo"
-              title={`${DEMO_OPERATOR.name} · ${DEMO_OPERATOR.role}`}
-            >
-              {DEMO_OPERATOR.initials}
+            <div className="group relative">
+              <button
+                type="button"
+                className="flex size-9 items-center justify-center rounded-full bg-indigo-soft text-xs font-semibold text-indigo outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                aria-label={`${DEMO_OPERATOR.name}, ${DEMO_OPERATOR.role}`}
+                title={`${DEMO_OPERATOR.name} · ${DEMO_OPERATOR.role}`}
+              >
+                {DEMO_OPERATOR.initials}
+              </button>
+              <span className="pointer-events-none absolute top-11 right-0 hidden w-max rounded-md border border-border bg-card px-2 py-1 text-xs font-medium text-foreground shadow-[var(--shadow-card)] group-focus-within:block">
+                {DEMO_OPERATOR.name} · {DEMO_OPERATOR.role}
+              </span>
             </div>
           </div>
         </header>
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main
+          id="main-content"
+          ref={mainRef}
+          tabIndex={-1}
+          className="flex-1 px-4 py-6 outline-none sm:px-6 lg:px-8"
+        >
+          {children}
+        </main>
       </div>
     </div>
+    </>
   );
 }

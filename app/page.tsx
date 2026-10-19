@@ -23,7 +23,13 @@ export default async function DashboardPage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <h1
+            id="page-heading"
+            tabIndex={-1}
+            className="rounded-sm text-2xl font-semibold tracking-tight outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          >
+            Dashboard
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Fieldnote Workspace · catalog $49 / $99 / $249 · clock frozen 23 Aug 2026.
           </p>

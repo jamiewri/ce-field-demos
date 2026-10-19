@@ -5,7 +5,13 @@ export default function NotFound() {
   return (
     <div className="mx-auto flex max-w-xl flex-col items-start gap-4 py-16">
       <p className="text-xs font-medium tracking-[0.16em] text-indigo uppercase">Missing folio</p>
-      <h1 className="text-3xl font-semibold tracking-tight">That page is not in this ledger.</h1>
+      <h1
+        id="page-heading"
+        tabIndex={-1}
+        className="rounded-sm text-3xl font-semibold tracking-tight outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      >
+        That page is not in this ledger.
+      </h1>
       <p className="text-sm leading-relaxed text-muted-foreground">
         Stable demo routes live at Dashboard, Invoices, Collections, Disputes, and Settings.
         Invoice IDs look like <span className="font-mono text-foreground">inv_1043</span>; disputes like{" "}
