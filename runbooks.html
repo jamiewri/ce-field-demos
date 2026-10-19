@@ -745,21 +745,21 @@ Run the remaining commands in the Project. Note that responses to prompts may di
         </article>
         <article class="beat" data-beat="open-plan-agent">
           <h4>Start a new agent.</h4>
-          <p class="say">I want to fix the keyboard walkthrough failures from all three pages.</p>
+          <p class="say">I want to fix the keyboard findings that do not share a file.</p>
           <div class="do-box">
             <ul><li>Open a new local agent.</li></ul>
           </div>
         </article>
         <article class="beat" data-beat="plan-remediation">
           <h4>Start a plan to fix the walkthrough failures on a separate worktree.</h4>
-          <p class="say">Create a plan based on the combined failures from the three walkthroughs. If the plan asks questions, choose to run tasks in parallel and write updates to the issue tracker.
-By starting the work on a separate worktree, you avoid editing the working code on the main branch. If you do not let the agent automatically approve changes on the worktree, you may have to manually approve each file change.</p>
+          <p class="say">Create a plan from the in-scope findings in the audit. If the plan asks questions, choose to run one task per finding in parallel and write updates to the issue tracker.
+By starting each task on its own worktree, you avoid editing the working code on the main branch. If you do not let the agent automatically approve changes on the worktree, you may have to manually approve each file change.</p>
           <div class="paste">
             <div class="paste-head">
               <span>Paste in Grok Build</span>
               <button type="button" class="copy">Copy</button>
             </div>
-            <pre>/plan fixes for the keyboard failures on invoices, collections, and settings in @.cursor/plans/keyboard-walkthrough-audit.md. One task per failure, mark parallel tasks, and use a separate worktree with auto-approved changes.</pre>
+            <pre>/plan the in-scope keyboard fixes in @.cursor/plans/keyboard-walkthrough-audit.md. One task per finding, in parallel, each on its own worktree with auto-approved changes.</pre>
           </div>
         </article>
         <article class="beat" data-beat="review-plan">
