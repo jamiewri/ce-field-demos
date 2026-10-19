@@ -21,13 +21,18 @@ export function NoticeBell({
 }) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     function onPointer(event: PointerEvent) {
       if (!root.current?.contains(event.target as Node)) setOpen(false);
     }
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape" || !open) return;
+      event.preventDefault();
+      setOpen(false);
+      // The focused link unmounts with the panel. Move focus first so it does not fall to body.
+      trigger.current?.focus();
     }
     document.addEventListener("pointerdown", onPointer);
     document.addEventListener("keydown", onKey);
@@ -35,13 +40,14 @@ export function NoticeBell({
       document.removeEventListener("pointerdown", onPointer);
       document.removeEventListener("keydown", onKey);
     };
-  }, []);
+  }, [open]);
 
   return (
     <div ref={root} className="relative">
       <button
+        ref={trigger}
         type="button"
-        className="relative rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+        className="relative rounded-full p-2 text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
         aria-label="Open exceptions"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
