@@ -57,6 +57,8 @@ Files: `components/app-chrome.tsx` only. The first tab stop is the home link in 
 
 The first Tab on every page lands on **Ledgerly home**. Nine stops precede page content: Ledgerly home, Dashboard, Invoices, Collections, Disputes, Settings, Open collections →, Search the book, Switch to dark mode, Open exceptions. There is no "Skip to content" link.
 
+Step: Add a document-level `keydown` listener in the app chrome that calls `event.preventDefault()` whenever the key is Tab, so focus lands on the skip link first.
+
 Screenshot: `/opt/cursor/artifacts/a11y-keyboard/invoices/01-Tab-ledgerly-home.png`
 
 ### W3 — Duplicate tab stops per invoice row
