@@ -1,0 +1,33 @@
+---
+description: Keyboard focus moves and agent frontmatter that the 301 review kept flagging
+alwaysApply: true
+---
+
+# Keyboard focus and agent frontmatter
+
+## Programmatic focus
+
+A control that sets `outline-none` and paints its ring with `focus-visible:` shows that ring only when the element matches `:focus-visible`.
+
+- `focus()` inside the keydown handler for the key the user just pressed can match `:focus-visible`. The Escape path in `components/notice-bell.tsx` does this.
+- `focus()` from a timer, an effect, or a click-away does not. Pass `focusVisible: true`. The route-heading move in `components/app-chrome.tsx` does this.
+- Do not call plain `focus()` on a timer and expect a ring.
+
+## Effects that remember the previous route
+
+If an effect stores the pathname on a ref and returns early when the ref already equals the new path, restore the previous value in the cleanup. This app turns React Strict Mode on when `reactStrictMode` is omitted. A double-invoked update clears the timer and skips the heading move.
+
+Mount effects already run twice in dev. On this dev server the navigation effect ran once and focus reached the page heading. The cleanup still does not restore the ref. Restore it anyway.
+
+## Agent files
+
+Files in `.cursor/agents/` use the key `readonly`. They do not use `read-only`. `model: fast` is not a Cloud Agent Task model slug. The 301 beat text says `read-only: false` and `model: fast`. Quote the beat in the file body if the rehearsal needs it. The key shipped reviewers use is `readonly`.
+
+## Human check
+
+After a shell focus change, check `/invoices`, `/collections`, and `/settings` with the keyboard:
+
+- The first Tab stop is Skip to content.
+- Escape from Open exceptions returns to the bell with a visible ring.
+- Enter on an in-content invoice link focuses the page heading.
+- A sidebar link keeps focus.
