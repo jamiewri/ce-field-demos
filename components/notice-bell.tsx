@@ -21,13 +21,18 @@ export function NoticeBell({
 }) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const openRef = useRef(open);
+  openRef.current = open;
 
   useEffect(() => {
     function onPointer(event: PointerEvent) {
       if (!root.current?.contains(event.target as Node)) setOpen(false);
     }
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape" || !openRef.current) return;
+      setOpen(false);
+      buttonRef.current?.focus();
     }
     document.addEventListener("pointerdown", onPointer);
     document.addEventListener("keydown", onKey);
@@ -40,6 +45,7 @@ export function NoticeBell({
   return (
     <div ref={root} className="relative">
       <button
+        ref={buttonRef}
         type="button"
         className="relative rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
         aria-label="Open exceptions"
