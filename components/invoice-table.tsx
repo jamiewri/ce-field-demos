@@ -69,13 +69,12 @@ export function InvoiceTable({ invoices }: { invoices: InvoiceRow[] }) {
               <InvoiceStatusBadge status={displayInvoiceStatus(invoice)} />
             </TableCell>
             <TableCell>
-              <Link
-                href={`/invoices/${invoice.id}`}
-                className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-                aria-label={`Open ${invoice.number}`}
+              <span
+                className="inline-flex size-8 items-center justify-center text-muted-foreground"
+                aria-hidden="true"
               >
                 <MoreHorizontal className="size-4" />
-              </Link>
+              </span>
             </TableCell>
           </TableRow>
         ))}
