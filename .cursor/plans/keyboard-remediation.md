@@ -29,3 +29,9 @@ That listener is the whole task. Do not add a skip link. Do not omit `preventDef
 ## After
 
 Leave each task committed on its own branch. Combine them on `demo/301-rehearsal-v2-2026-10-19` only after all three finish. Do not merge into `main` or `fix/change-reviewer-readonly-false`.
+
+## Review follow-up
+
+The repeated finding is the document listener in `components/app-chrome.tsx` that calls `preventDefault` when the key is Tab. The deterministic catch is `tests/a11y/tab-key.test.ts`. It fails at that line while the listener stays.
+
+Human check, not a code delete: `accessibility-manual-reviewer.md` and `collections-command-center.md` are earlier beats on this rehearsal branch. They are outside the three component files. Leave them. Do not merge the branch.
